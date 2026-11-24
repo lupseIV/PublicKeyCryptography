@@ -2,8 +2,11 @@
 
 import secrets
 
-# Setting: 27-character alphabet, blank = 0, A = 1, ..., Z = 26.
-ALPHABET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+# Setting: 27-character alphabet, blank = 1, A = 2, ..., Z = 27.
+# Index 0 ("%") is a placeholder and is never encrypted: m = 0 would give beta = 0
+# for every k, revealing the character. "%" is rejected in validate_plaintext.
+ALPHABET = "% ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ALLOWED_CHARS = ALPHABET[1:]  # blank and A-Z, without the placeholder
 
 
 def validate_public_key(public_key):
@@ -32,7 +35,7 @@ def validate_plaintext(plaintext):
         raise ValueError("Plaintext must not be empty.")
     normalized = plaintext.upper()
     for position, char in enumerate(normalized):
-        if char not in ALPHABET:
+        if char not in ALLOWED_CHARS:
             raise ValueError(
                 f"Invalid character {plaintext[position]!r} at position {position}: "
                 "only blanks and the letters A-Z are allowed."
